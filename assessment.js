@@ -1,4 +1,52 @@
 'use strict';
+const userNameInput = document.getElementById('user-name');
+const assessmentButton = document.getElementById('assessment');
+const resultDivided = document.getElementById('result-area');
+const tweetDivided = document.getElementById('tweet-area');
+
+assessmentButton.onclick = function() {
+  const userName = userNameInput.value;
+  if (userName.length === 0) {
+    // 名前が空のときは処理を終了する
+    return;
+  }
+
+  resultDivided.innerText = "";
+  const header = document.createElement('h3');
+  header.innerText = "診断結果";
+  resultDivided.appendChild(header);
+
+  const paragraph = document.createElement('p');
+  const result = assessment(userName);
+  paragraph.innerText = result;
+  resultDivided.appendChild(paragraph)
+  // 診断結果表示エリア
+  //ツイートエリア
+  tweetDivided.innerText = "";
+  const anchor = document.createElement('a');
+  // <a href="https://twitter.com/intent/tweet?button_hashtag=あなたのいいところ&ref_src=twsrc%5Etfw" class="twitter-hashtag-button" data-text="診断結果の文章" data-show-count="false">Tweet #あなたのいいところ</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+  const hrefValue =
+    'https://twitter.com/intent/tweet?button_hashtag=' +
+    encodeURIComponent('あなたのいいところ') +
+    '&ref_src=twsrc%5Etfw';
+  anchor.setAttribute('href', hrefValue);
+  anchor.className = 'twitter-hashtag-button';
+  anchor.setAttribute('data-text', result);
+  anchor.innerText = 'Tweet #あなたのいいところ';
+
+  tweetDivided.appendChild(anchor);
+
+  const script = document.createElement('script');
+  script.setAttribute('src', 'https://platform.twitter.com/widgets.js');
+  tweetDivided.appendChild(script);
+};
+
+userNameInput.onkeydown = event => {
+  if (event.key === 'Enter') {
+    assessmentButton.onclick();
+  }
+};
+
 const answers = [
   "{userName}のいいところは声です。{userName}の特徴的な声は皆を惹きつけ、心に残ります。",
   "{userName}のいいところはまなざしです。{userName}に見つめられた人は、気になって仕方がないでしょう。",
@@ -46,5 +94,6 @@ console.assert(
 );
 
 console.assert(
-  assessment('sameName') === assessment('sameName')
+  assessment('sameName') === assessment('sameName'),
+  '入力が同じ名前なら同じ診断結果を出力する処理が正しくありません。'
 );
